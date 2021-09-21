@@ -4,6 +4,7 @@ import {
   Route,
   Switch,
   Redirect,
+  Link,
 } from "react-router-dom";
 import Home from "./Pages/Home";
 import BeerList from "./Pages/BeerList";
@@ -12,6 +13,7 @@ import BeerList from "./Pages/BeerList";
 const Routes = () => {
   return (
     <Router>
+      <Link to="/home">Beer Hear</Link>
       <Switch>
         <Route path="/home" component={Home} />
         <Route path="/beerlist" component={BeerList} />
