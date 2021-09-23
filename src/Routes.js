@@ -11,19 +11,28 @@ import BeerList from "./Pages/BeerList";
 import styled from "styled-components";
 // import ReactGA from "react-ga";
 
-const LogoImg = styled.img`
+const LogoContainer = styled.header`
   position: fixed;
   z-index: 80;
   top: 0;
-  width: 200px;
-  margin: 20px 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  padding: 20px 0;
+`;
+
+const LogoImg = styled.img`
+  width: 300px;
 `;
 
 const Routes = () => {
   return (
     <Router>
       <Link to="/home">
-        <LogoImg src="/img/logo.jpg" alt="log-img" />
+        <LogoContainer>
+          <LogoImg src="/img/logo.jpg" alt="log-img" />
+        </LogoContainer>
       </Link>
       <Switch>
         <Route path="/home" component={Home} />
