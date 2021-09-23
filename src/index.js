@@ -6,6 +6,7 @@ import rootReducer from "./Modules";
 import { rootSaga } from "./Modules";
 import createSagaMiddleware from "redux-saga";
 import { createStore, applyMiddleware, compose } from "redux";
+import { GlobalStyle } from "./styles";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -26,6 +27,7 @@ sagaMiddleware.run(rootSaga);
 ReactDOM.render(
   <Provider store={store}>
     <Routes />
+    <GlobalStyle />
   </Provider>,
   document.getElementById("root")
 );
