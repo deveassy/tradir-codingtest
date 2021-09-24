@@ -1,32 +1,32 @@
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import allActions from "../Modules/actions";
 import styled from "styled-components";
-// import { Button } from "material-table";
-import { Modal, Button } from "antd";
+import { loadData } from "../Modules/posts";
+import FilterButton from "../components/FillterButton";
+import { Modal } from "antd";
 import "antd/dist/antd.css";
-
-// 테이블의 column header를 드래그해서 순서를 변경할 때 redux에 저장된 순서도 변경 되야 함
-// abv의 필터기능 -> 다중선택 가능해야 함
-// 장바구니 기능 있어야 함 - 맥주 종류를 장바구니에 추가, 삭제
-// 맥주 클릭하면 modal창이 뜨면서 상세정보를 보여주어야 함 (antd 컴포넌트 사용하기)
 
 const TableContainer = styled.div`
   height: 100vh;
-  padding-bottom: 100px;
   margin-top: 120px;
+`;
+
+const BeerImg = styled.img`
+  height: 30vh;
+  margin-right: 20px;
 `;
 
 const BeerList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const beers = useSelector((state) => state.dataReducer);
+  const beers = useSelector((state) => state.posts);
+  const lists = useSelector((state) => state.reorder);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(allActions.loadData());
+    dispatch(loadData());
   }, [dispatch]);
 
   const showModal = () => {
@@ -41,26 +41,22 @@ const BeerList = () => {
     setIsModalVisible(false);
   };
 
-  if (!beers) return <div> Loading... </div>;
+  const handleColumnDrag = () => {
+    let newList = [];
+    lists.forEach((column) => {
+      newList.concat({
+        field: column.field,
+        newList: column.tableData.newList,
+      });
+    });
+    console.log(newList);
+  };
 
   return (
     <TableContainer>
       <MaterialTable
         title="Beer List"
-        columns={[
-          { id: 1, title: "List Num.", field: "id" },
-          {
-            id: 2,
-            title: "Name",
-            field: "name",
-          },
-          {
-            id: 3,
-            title: "ABV",
-            field: "abv",
-          },
-          { id: 4, title: "Tagline", field: "tagline" },
-        ]}
+        columns={lists}
         data={beers.map((beer) => ({
           id: `${beer.id}`,
           name: `${beer.name}`,
@@ -71,6 +67,7 @@ const BeerList = () => {
           setSelectedRow(rowData.tableData.id);
           showModal();
         }}
+        onColumnDragged={handleColumnDrag}
         options={{
           sorting: false,
           selection: true,
@@ -78,28 +75,35 @@ const BeerList = () => {
           paginationType: "stepped",
         }}
       />
-      {/* <FilterButton /> */}
-      <>
+      <FilterButton />
+      {selectedRow !== null ? (
         <Modal
-          title={selectedRow === null ? "title" : beers[selectedRow].name}
+          title={beers[selectedRow].name}
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <div>
-            <img
-              src={selectedRow === null ? "" : beers[selectedRow].image_url}
-              alt="beer's img"
-              style={{ height: "20vh" }}
-            />
-          </div>
-          <div>
-            <h3>{selectedRow === null ? "" : beers[selectedRow].tagline}</h3>
-          </div>
+          <MainContainer>
+            <div>
+              <BeerImg src={beers[selectedRow].image_url} alt="beer's img" />
+            </div>
+            <div>
+              <h3>{beers[selectedRow].tagline}</h3>
+              <p>{beers[selectedRow].description}</p>
+              <p>First Brewed : {beers[selectedRow].first_brewed}</p>
+              <p>ABV : {beers[selectedRow].abv}</p>
+              <p>IBU : {beers[selectedRow].ibu}</p>
+            </div>
+          </MainContainer>
         </Modal>
-      </>
+      ) : null}
     </TableContainer>
   );
 };
 
 export default BeerList;
+
+const MainContainer = styled.main`
+  display: flex;
+  flex-direction: row;
+`;
