@@ -14,7 +14,6 @@ const rootReducer = combineReducers({
   dataReducer,
 });
 
-// export default rootReducer;
 export default rootReducer;
 
 function* workerSaga() {
